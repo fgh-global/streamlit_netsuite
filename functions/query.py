@@ -72,7 +72,7 @@ def query_results(destination, database, schema, model='bs'):
                     "account_name, "\
                     "account_type_name, "\
                     "round(sum(converted_amount),2) as balance "\
-                "from `" + database + "." + schema + ".netsuite2__balance_sheet` "\
+                "from " + database + "." + schema + ".netsuite2__balance_sheet "\
                 "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper"
             )
             raw_results = query_job.result()
@@ -93,7 +93,7 @@ def query_results(destination, database, schema, model='bs'):
                     "account_name, "\
                     "account_type_name, "\
                     "round(sum(converted_amount),2) as balance "\
-                "from `" + database + "." + schema + ".netsuite2__income_statement` "\
+                "from " + database + "." + schema + ".netsuite2__income_statement "\
                 "group by 1,2,3,4,5,6 order by income_statement_sort_helper"
             )
             raw_results = query_job.result()
