@@ -62,7 +62,7 @@ def query_results(destination, database, schema, model='bs'):
         if database is None or schema is None:
             st.warning("Results will be displayed once your database and schema are provided.")
         else:
-            conn = st.experimental_connection('snowpark')
+            conn = st.connection('snowflake')
             query_job = conn.query(
                 "select "\
                     "balance_sheet_sort_helper, "\
@@ -83,7 +83,7 @@ def query_results(destination, database, schema, model='bs'):
         if database is None or schema is None:
             st.warning("Results will be displayed once your database and schema are provided.")
         else:
-            conn = st.experimental_connection('snowpark')
+            conn = st.connection('snowflake')
             query_job = conn.query(
                 "select "\
                     "income_statement_sort_helper, "\
