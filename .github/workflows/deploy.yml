@@ -1,0 +1,45 @@
+name: Deploy to GCP Artifact Registry
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GAR_LOCATION: us-central1
+  REPOSITORY: streamlit-apps
+  IMAGE_NAME: streamlit-netsuite
+  
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      
+    - name: Configure Docker for GCP Artifact Registry
+      run: |
+        gcloud auth configure-docker $GAR_LOCATION-docker.pkg.dev
+        
+    - name: Build and tag Docker image
+      run: |
+        docker build -t $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$GITHUB_SHA .
+        docker tag $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$GITHUB_SHA $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:latest
+        
+    - name: Push Docker image to GCP Artifact Registry
+      run: |
+        docker push $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$GITHUB_SHA
+        docker push $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:latest

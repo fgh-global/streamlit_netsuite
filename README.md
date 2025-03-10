@@ -16,6 +16,16 @@ By default this Streamlit app uses sample Dunder Mifflin Netsuite tickets data t
 # 🎯 How do I use this Streamlit app?
 As previously mentioned this Streamlit App is publicly deployed using sample Dunder Mifflin Zendesk ticket data. This is to show an example of the types of analysis that may be performed with modeled Netsuite data synced and transformed with Fivetran. However, this Streamlit App has been designed to be also be forked and customize to leverage other data sources. If you wish to leverage this Streamlit App with your own modeled Netsuite data, you may follow the below steps.
 
+## Deployment with GitHub Actions
+This repository includes a GitHub Actions workflow that automatically builds and deploys the Streamlit app as a Docker container to Google Cloud Platform's Artifact Registry. To use this workflow:
+
+1. Fork this repository to your GitHub account
+2. Set up the following secrets in your GitHub repository:
+   - `GCP_PROJECT_ID`: Your Google Cloud Platform project ID
+   - `GCP_SA_KEY`: The JSON key of a service account with permissions to push to Artifact Registry
+
+The workflow will trigger automatically when you push to the main branch, or you can manually trigger it from the Actions tab in your GitHub repository.
+
 ## Step 1: Prerequisites
 To use this Streamlit app, you must have the following:
 
