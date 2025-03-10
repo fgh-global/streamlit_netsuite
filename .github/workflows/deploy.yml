@@ -8,8 +8,8 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GAR_LOCATION: us-central1
-  REPOSITORY: streamlit-apps
-  IMAGE_NAME: streamlit-netsuite
+  REPOSITORY: streamlit-netsuite
+  IMAGE_NAME: ${{ github.sha }}
   
 jobs:
   build-and-deploy:
