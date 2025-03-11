@@ -22,6 +22,8 @@ def setup_snowflake_connection():
         # If secrets.toml doesn't exist, set up connection from environment variables
         st.write("Secrets file not found. Setting up Snowflake connection from environment variables.")
         print("Secrets file not found. Setting up Snowflake connection from environment variables.")
+        st.write("SNOWFLAKE_ACCOUNT:", os.environ.get("SNOWFLAKE_ACCOUNT"))
+        print("SNOWFLAKE_ACCOUNT:", os.environ.get("SNOWFLAKE_ACCOUNT"))
         # Use experimental_connection with parameters from environment variables
         return st.connection(
             "", 
