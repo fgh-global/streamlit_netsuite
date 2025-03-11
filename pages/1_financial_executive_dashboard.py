@@ -8,6 +8,10 @@ from datetime import datetime
 from functions.filters import date_filter, filter_data, extract_second_item
 from functions.variables import database_schema_variables, destination_selection
 from functions.query import query_results
+# from functions.env_utils import setup_snowflake_connection
+
+# Set up Snowflake connection from environment variables if secrets.toml doesn't exist
+# setup_snowflake_connection()
 
 st.sidebar.header('Data Connection Variables')
 destination = destination_selection()
