@@ -3,6 +3,7 @@ import pandas as pd
 from google.oauth2 import service_account
 from google.cloud import bigquery
 import datetime
+from functions.env_utils import setup_snowflake_connection
 
 # Grab global variables
 destination = st.session_state.destination
@@ -87,7 +88,8 @@ def query_results(destination, database, schema, model='bs'):
             st.warning("Results will be displayed once your database and schema are provided.")
         else:
             # Use the connection from session_state if available, otherwise fall back to st.connection
-            conn = st.session_state.get('snowflake_conn', st.connection('snowflake'))
+            # conn = st.session_state.get('snowflake_conn', st.connection('snowflake'))
+            conn = setup_snowflake_connection()
             dataframe_results = conn.query(
                 "select "\
                     "balance_sheet_sort_helper, "\
@@ -114,7 +116,9 @@ def query_results(destination, database, schema, model='bs'):
             st.warning("Results will be displayed once your database and schema are provided.")
         else:
             # Use the connection from session_state if available, otherwise fall back to st.connection
-            conn = st.session_state.get('snowflake_conn', st.connection('snowflake'))
+            # conn = st.session_state.get('snowflake_conn', st.connection('snowflake'))
+            conn = setup_snowflake_connection()
+
             dataframe_results = conn.query(
                 "select "\
                     "income_statement_sort_helper, "\

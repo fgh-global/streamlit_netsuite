@@ -4,3 +4,4 @@ matplotlib
 snowflake-snowpark-python[pandas]
 streamlit
 plotly
+snowflake-connector-python

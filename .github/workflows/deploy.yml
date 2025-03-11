@@ -2,7 +2,7 @@ name: Deploy to GCP Artifact Registry
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, debug ]
   workflow_dispatch:
 
 env:
