@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from functions.variables import database_schema_variables, destination_selection
-from functions.env_utils import setup_snowflake_connection
+# from functions.env_utils import setup_snowflake_connection
 
 # Initialize authentication state if not already set
 if 'authenticated' not in st.session_state:
@@ -33,7 +33,7 @@ else:
     # Only set up connection and show content if authenticated
     # Set up Snowflake connection from environment variables if secrets.toml doesn't exist
     # Store the connection in session_state so it can be accessed by other parts of the app
-    st.session_state.snowflake_conn = setup_snowflake_connection()
+    # st.session_state.snowflake_conn = setup_snowflake_connection()
 
     st.sidebar.header('Data Connection Variables')
     destination = destination_selection()
