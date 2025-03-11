@@ -21,6 +21,9 @@ SNOWFLAKE_WAREHOUSE=your-warehouse
 SNOWFLAKE_DATABASE=your-database
 SNOWFLAKE_SCHEMA=your-schema
 SNOWFLAKE_CLIENT_SESSION_KEEP_ALIVE=true
+
+# Authentication
+STREAMLIT_AUTH_PASSWORD=your-password
 ```
 ## Setting Environment Variables in Cloud Environments
 
@@ -47,6 +50,7 @@ export SNOWFLAKE_WAREHOUSE=your-warehouse
 export SNOWFLAKE_DATABASE=your-database
 export SNOWFLAKE_SCHEMA=your-schema
 export SNOWFLAKE_CLIENT_SESSION_KEEP_ALIVE=true
+export STREAMLIT_AUTH_PASSWORD=your-password
 ```
 
 3. Run your Streamlit app:
