@@ -47,6 +47,7 @@ def convert_date_string(date_str):
         return date_str
 
 def query_results(destination, database, schema, model='bs'):
+
     if destination == "BigQuery" and model == "bs":
         if database is None or schema is None:
             st.warning("Results will be displayed once your database and schema are provided.")
@@ -85,7 +86,8 @@ def query_results(destination, database, schema, model='bs'):
         if database is None or schema is None:
             st.warning("Results will be displayed once your database and schema are provided.")
         else:
-            conn = st.connection('snowflake')
+            # Use the connection from session_state if available, otherwise fall back to st.connection
+            conn = st.session_state.get('snowflake_conn', st.connection('snowflake'))
             dataframe_results = conn.query(
                 "select "\
                     "balance_sheet_sort_helper, "\
@@ -111,7 +113,8 @@ def query_results(destination, database, schema, model='bs'):
         if database is None or schema is None:
             st.warning("Results will be displayed once your database and schema are provided.")
         else:
-            conn = st.connection('snowflake')
+            # Use the connection from session_state if available, otherwise fall back to st.connection
+            conn = st.session_state.get('snowflake_conn', st.connection('snowflake'))
             dataframe_results = conn.query(
                 "select "\
                     "income_statement_sort_helper, "\
