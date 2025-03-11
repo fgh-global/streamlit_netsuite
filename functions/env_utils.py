@@ -17,6 +17,7 @@ def setup_snowflake_connection():
     
     if secrets_path.exists():
         # If secrets.toml exists, use the standard connection API
+        st.write("Secrets file found. Setting up Snowflake connection from secrets.toml.")
         return st.connection('snowflake')
     else:
         # If secrets.toml doesn't exist, set up connection from environment variables
