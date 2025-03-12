@@ -5,6 +5,7 @@ import numpy as np
 from datetime import datetime
 from functions.filters import date_filter, filter_data
 from functions.variables import database_schema_variables, destination_selection
+from functions.env_utils import display_snowflake_credentials
 # from functions.env_utils import setup_snowflake_connection
 
 # Authentication check
@@ -12,10 +13,9 @@ if 'authenticated' not in st.session_state or not st.session_state.authenticated
     st.warning("Please log in first")
     st.stop()  # This prevents the rest of the page from loading
 
-# Set up Snowflake connection from environment variables if secrets.toml doesn't exist
-# snowflake_conn = setup_snowflake_connection()
+# Display Snowflake credentials in the sidebar
+display_snowflake_credentials()
 
-st.sidebar.header('Data Connection Variables')
 destination = destination_selection()
 database, schema = database_schema_variables()
 

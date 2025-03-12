@@ -87,58 +87,69 @@ def query_results(destination, database, schema, model='bs'):
         if database is None or schema is None:
             st.warning("Results will be displayed once your database and schema are provided.")
         else:
-            # Use the connection from session_state if available, otherwise fall back to st.connection
-            # conn = st.session_state.get('snowflake_conn', st.connection('snowflake'))
+            # Get connection with current credentials
             conn = setup_snowflake_connection()
-            dataframe_results = conn.query(
-                "select "\
-                    "balance_sheet_sort_helper, "\
-                    "accounting_period_name, "\
-                    "accounting_period_ending, "\
-                    "account_category, "\
-                    "account_name, "\
-                    "account_type_name, "\
-                    "round(sum(converted_amount),2) as balance "\
-                "from " + database + "." + schema + ".netsuite2__balance_sheet "\
-                "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper"
-            )
             
-            dataframe_results.columns = dataframe_results.columns.str.lower()
-            
-            # Handle date conversion properly
-            if 'accounting_period_ending' in dataframe_results.columns:
-                dataframe_results['accounting_period_ending'] = convert_date_string(dataframe_results['accounting_period_ending'])
-            
-            query = dataframe_results
+            # Only proceed if we have a valid connection
+            if conn is not None:
+                dataframe_results = conn.query(
+                    "select "\
+                        "balance_sheet_sort_helper, "\
+                        "accounting_period_name, "\
+                        "accounting_period_ending, "\
+                        "account_category, "\
+                        "account_name, "\
+                        "account_type_name, "\
+                        "round(sum(converted_amount),2) as balance "\
+                    "from " + database + "." + schema + ".netsuite2__balance_sheet "\
+                    "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper"
+                )
+                
+                dataframe_results.columns = dataframe_results.columns.str.lower()
+                
+                # Handle date conversion properly
+                if 'accounting_period_ending' in dataframe_results.columns:
+                    dataframe_results['accounting_period_ending'] = convert_date_string(dataframe_results['accounting_period_ending'])
+                
+                query = dataframe_results
+            else:
+                # Return empty dataframe if no valid connection
+                st.error("Unable to connect to Snowflake. Please check your credentials.")
+                query = pd.DataFrame()
 
     if destination == "Snowflake" and model == "is":
         if database is None or schema is None:
             st.warning("Results will be displayed once your database and schema are provided.")
         else:
-            # Use the connection from session_state if available, otherwise fall back to st.connection
-            # conn = st.session_state.get('snowflake_conn', st.connection('snowflake'))
+            # Get connection with current credentials
             conn = setup_snowflake_connection()
+            
+            # Only proceed if we have a valid connection
+            if conn is not None:
+                dataframe_results = conn.query(
+                    "select "\
+                        "income_statement_sort_helper, "\
+                        "accounting_period_name, "\
+                        "accounting_period_ending, "\
+                        "account_category, "\
+                        "account_name, "\
+                        "account_type_name, "\
+                        "round(sum(converted_amount),2) as balance "\
+                    "from " + database + "." + schema + ".netsuite2__income_statement "\
+                    "group by 1,2,3,4,5,6 order by income_statement_sort_helper"
+                )
 
-            dataframe_results = conn.query(
-                "select "\
-                    "income_statement_sort_helper, "\
-                    "accounting_period_name, "\
-                    "accounting_period_ending, "\
-                    "account_category, "\
-                    "account_name, "\
-                    "account_type_name, "\
-                    "round(sum(converted_amount),2) as balance "\
-                "from " + database + "." + schema + ".netsuite2__income_statement "\
-                "group by 1,2,3,4,5,6 order by income_statement_sort_helper"
-            )
+                dataframe_results.columns = dataframe_results.columns.str.lower()
 
-            dataframe_results.columns = dataframe_results.columns.str.lower()
+                # Handle date conversion properly
+                if 'accounting_period_ending' in dataframe_results.columns:
+                    dataframe_results['accounting_period_ending'] = convert_date_string(dataframe_results['accounting_period_ending'])
 
-            # Handle date conversion properly
-            if 'accounting_period_ending' in dataframe_results.columns:
-                dataframe_results['accounting_period_ending'] = convert_date_string(dataframe_results['accounting_period_ending'])
-
-            query = dataframe_results
+                query = dataframe_results
+            else:
+                # Return empty dataframe if no valid connection
+                st.error("Unable to connect to Snowflake. Please check your credentials.")
+                query = pd.DataFrame()
 
     if destination == "Dunder Mifflin Sample Data" and model == "is":
         query = pd.read_csv('data/dunder_mifflin_income_statement.csv')
