@@ -48,6 +48,7 @@ def convert_date_string(date_str):
         return date_str
 
 def query_results(destination, database, schema, model='bs'):
+    # No caching at this level - rely on the connection's caching mechanism
 
     if destination == "BigQuery" and model == "bs":
         if database is None or schema is None:
@@ -92,6 +93,7 @@ def query_results(destination, database, schema, model='bs'):
             
             # Only proceed if we have a valid connection
             if conn is not None:
+                # Use ttl=0 to always fetch fresh data
                 dataframe_results = conn.query(
                     "select "\
                         "balance_sheet_sort_helper, "\
@@ -102,8 +104,11 @@ def query_results(destination, database, schema, model='bs'):
                         "account_type_name, "\
                         "round(sum(converted_amount),2) as balance "\
                     "from " + database + "." + schema + ".netsuite2__balance_sheet "\
-                    "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper"
+                    "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper",
+                    ttl=0  # Always fetch fresh data
                 )
+
+                st.write(dataframe_results)
                 
                 dataframe_results.columns = dataframe_results.columns.str.lower()
                 
@@ -126,6 +131,7 @@ def query_results(destination, database, schema, model='bs'):
             
             # Only proceed if we have a valid connection
             if conn is not None:
+                # Use ttl=0 to always fetch fresh data
                 dataframe_results = conn.query(
                     "select "\
                         "income_statement_sort_helper, "\
@@ -136,8 +142,11 @@ def query_results(destination, database, schema, model='bs'):
                         "account_type_name, "\
                         "round(sum(converted_amount),2) as balance "\
                     "from " + database + "." + schema + ".netsuite2__income_statement "\
-                    "group by 1,2,3,4,5,6 order by income_statement_sort_helper"
+                    "group by 1,2,3,4,5,6 order by income_statement_sort_helper",
+                    ttl=0  # Always fetch fresh data
                 )
+
+                st.write(dataframe_results)
 
                 dataframe_results.columns = dataframe_results.columns.str.lower()
 
@@ -176,12 +185,12 @@ def query_results(destination, database, schema, model='bs'):
         # Get the data into the app and specify any datatypes if needed.
         data_load_state = st.text('Loading data...')
         data['accounting_period_ending'] = data['accounting_period_ending'].dt.date
-        data_load_state.text("Done! (using st.cache_data)")
+        data_load_state.text("Done! (using fresh data)")
     if model == 'is':
         data = query
         # Get the data into the app and specify any datatypes if needed.
         data_load_state = st.text('Loading data...')
         data['accounting_period_ending'] = data['accounting_period_ending'].dt.date
-        data_load_state.text("Done! (using st.cache_data)")
+        data_load_state.text("Done! (using fresh data)")
         
     return data

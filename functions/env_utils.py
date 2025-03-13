@@ -19,10 +19,24 @@ def display_snowflake_credentials():
         st.session_state.snowflake_password = ""
     snowflake_password = st.sidebar.text_input("Password", type="password", value=st.session_state.snowflake_password)
     
+    # Add role input with session state persistence
+    if 'snowflake_role' not in st.session_state:
+        st.session_state.snowflake_role = ""
+    snowflake_role = st.sidebar.text_input("Role", value=st.session_state.snowflake_role)
+
     # Add save button to update credentials and refresh
     if st.sidebar.button("Save Credentials"):
         st.session_state.snowflake_username = snowflake_username
         st.session_state.snowflake_password = snowflake_password
+        st.session_state.snowflake_role = snowflake_role
+        
+        # Clear any cached connections when credentials change
+        if 'snowflake' in st.session_state:
+            del st.session_state['snowflake']
+            
+        # Clear any cached data
+        st.cache_data.clear()
+        
         st.rerun()  # This will refresh the app and apply the new credentials
 
 def setup_snowflake_connection():
@@ -39,45 +53,66 @@ def setup_snowflake_connection():
     """
     # Check if credentials are provided in session state
     if hasattr(st.session_state, 'snowflake_username') and st.session_state.snowflake_username and \
-       hasattr(st.session_state, 'snowflake_password') and st.session_state.snowflake_password:
+       hasattr(st.session_state, 'snowflake_password') and st.session_state.snowflake_password and \
+       hasattr(st.session_state, 'snowflake_role') and st.session_state.snowflake_role:
         
         # Check if .streamlit/secrets.toml exists for account, role, and warehouse
         secrets_path = Path(".streamlit/secrets.toml")
+        
+        # Create a connection ID that includes the credentials to ensure a new connection when credentials change
+        connection_id = f"snowflake_{st.session_state.snowflake_username}_{st.session_state.snowflake_role}"
         
         if secrets_path.exists():
             # If secrets.toml exists, use it for account, role, and warehouse
             # But still use session state for username and password
             try:
                 # Create a custom connection with session state credentials
-                return st.connection(
-                    "", 
+                # Set ttl=0 to disable caching and ensure fresh data is always fetched
+                conn = st.connection(
+                    "snowflake", 
                     type='snowflake', 
                     account=st.secrets["connections"]["snowflake"]["account"],
                     user=st.session_state.snowflake_username,
                     password=st.session_state.snowflake_password,
-                    role=st.secrets["connections"]["snowflake"]["role"],
+                    role=st.session_state.snowflake_role,
                     warehouse=st.secrets["connections"]["snowflake"]["warehouse"],
                     database=st.session_state.database,
                     schema=st.session_state.schema,
-                    client_session_keep_alive=True
+                    client_session_keep_alive=True,
+                    ttl=0  # Disable caching to always use fresh data
                 )
+                
+                # Reset the connection to ensure no cached data is used
+                conn.reset()
+                
+                return conn
             except Exception as e:
                 st.error(f"Error connecting to Snowflake: {e}")
                 return None
         else:
             # If secrets.toml doesn't exist, use environment variables for account, role, and warehouse
-            return st.connection(
-                "", 
-                type='snowflake', 
-                account=os.environ.get("SNOWFLAKE_ACCOUNT"),
-                user=st.session_state.snowflake_username,
-                password=st.session_state.snowflake_password,
-                role=os.environ.get("SNOWFLAKE_ROLE"),
-                warehouse=os.environ.get("SNOWFLAKE_WAREHOUSE"),
-                database=st.session_state.database,
-                schema=st.session_state.schema,
-                client_session_keep_alive=True
-            )
+            try:
+                conn = st.connection(
+                    "snowflake", 
+                    type='snowflake', 
+                    account=os.environ.get("SNOWFLAKE_ACCOUNT"),
+                    user=st.session_state.snowflake_username,
+                    password=st.session_state.snowflake_password,
+                    role=st.session_state.snowflake_role,
+                    warehouse=os.environ.get("SNOWFLAKE_WAREHOUSE"),
+                    database=st.session_state.database,
+                    schema=st.session_state.schema,
+                    client_session_keep_alive=True,
+                    ttl=0  # Disable caching to always use fresh data
+                )
+                
+                # Reset the connection to ensure no cached data is used
+                conn.reset()
+                
+                return conn
+            except Exception as e:
+                st.error(f"Error connecting to Snowflake: {e}")
+                return None
     else:
         # If no credentials in session state, return None
         return None
