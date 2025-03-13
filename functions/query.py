@@ -107,8 +107,6 @@ def query_results(destination, database, schema, model='bs'):
                     "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper",
                     ttl=0  # Always fetch fresh data
                 )
-
-                st.write(dataframe_results)
                 
                 dataframe_results.columns = dataframe_results.columns.str.lower()
                 
@@ -145,8 +143,6 @@ def query_results(destination, database, schema, model='bs'):
                     "group by 1,2,3,4,5,6 order by income_statement_sort_helper",
                     ttl=0  # Always fetch fresh data
                 )
-
-                st.write(dataframe_results)
 
                 dataframe_results.columns = dataframe_results.columns.str.lower()
 
