@@ -69,7 +69,7 @@ def setup_snowflake_connection():
                 # Create a custom connection with session state credentials
                 # Set ttl=0 to disable caching and ensure fresh data is always fetched
                 conn = st.connection(
-                    "snowflake", 
+                    "", 
                     type='snowflake', 
                     account=st.secrets["connections"]["snowflake"]["account"],
                     user=st.session_state.snowflake_username,
@@ -93,7 +93,7 @@ def setup_snowflake_connection():
             # If secrets.toml doesn't exist, use environment variables for account, role, and warehouse
             try:
                 conn = st.connection(
-                    "snowflake", 
+                    "", 
                     type='snowflake', 
                     account=os.environ.get("SNOWFLAKE_ACCOUNT"),
                     user=st.session_state.snowflake_username,
