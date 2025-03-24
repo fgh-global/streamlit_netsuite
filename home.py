@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from functions.variables import database_schema_variables, destination_selection
-from functions.env_utils import display_snowflake_credentials
+from functions.env_utils import display_sidebar_config
 
 # Initialize authentication state if not already set
 if 'authenticated' not in st.session_state:
@@ -31,7 +31,7 @@ if not st.session_state.authenticated:
             st.error("Incorrect password")
 else:
     # Display Snowflake credentials in the sidebar
-    display_snowflake_credentials()
+    display_sidebar_config()
     
     # Only show data connection variables if credentials are provided
     if st.session_state.snowflake_username and st.session_state.snowflake_password:

@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from pathlib import Path
 
-def display_snowflake_credentials():
+def display_sidebar_config():
     """
     Display Snowflake credentials input in the sidebar.
     This function should be called on all pages to ensure credentials are visible.
@@ -89,11 +89,6 @@ def setup_snowflake_connection():
         
         # Check if .streamlit/secrets.toml exists for account, role, and warehouse
         secrets_path = Path(".streamlit/secrets.toml")
-        
-        # # Create a connection ID that includes the credentials to ensure a new connection when credentials change
-        # connection_id = f"snowflake_{st.session_state.snowflake_username}_{st.session_state.snowflake_role}"
-
-        st.write("ROLE: ", st.session_state.snowflake_role)
         
         if secrets_path.exists():
             # If secrets.toml exists, use it for account, role, and warehouse

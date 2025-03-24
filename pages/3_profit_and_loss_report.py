@@ -6,7 +6,7 @@ import plotly.express as px
 from datetime import datetime
 from functions.filters import date_filter, filter_data
 from functions.variables import database_schema_variables, destination_selection
-from functions.env_utils import display_snowflake_credentials
+from functions.env_utils import display_sidebar_config
 # from functions.query import query_results
 # from functions.env_utils import setup_snowflake_connection
 
@@ -16,7 +16,7 @@ if 'authenticated' not in st.session_state or not st.session_state.authenticated
     st.stop()  # This prevents the rest of the page from loading
 
 # Display Snowflake credentials in the sidebar
-display_snowflake_credentials()
+display_sidebar_config()
 
 destination = destination_selection()
 database, schema = database_schema_variables()
