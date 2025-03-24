@@ -54,6 +54,9 @@ def query_results(destination, database, schema, model='bs'):
         if database is None or schema is None:
             st.warning("Results will be displayed once your database and schema are provided.")
         else:
+            # Get the accounting book ID from session state
+            accounting_book_id = st.session_state.get('accounting_book', 1)
+            
             query = run_query(
                 "select "\
                     "balance_sheet_sort_helper, "\
@@ -64,6 +67,7 @@ def query_results(destination, database, schema, model='bs'):
                     "account_type_name, "\
                     "round(sum(converted_amount),2) as balance "\
                 "from `" + database + "." + schema + ".netsuite2__balance_sheet` "\
+                "where accounting_book_id = " + str(accounting_book_id) + " "\
                 "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper"
             )
 
@@ -93,6 +97,9 @@ def query_results(destination, database, schema, model='bs'):
             
             # Only proceed if we have a valid connection
             if conn is not None:
+                # Get the accounting book ID from session state
+                accounting_book_id = st.session_state.get('accounting_book', 1)
+                
                 # Use ttl=0 to always fetch fresh data
                 dataframe_results = conn.query(
                     "select "\
@@ -104,11 +111,26 @@ def query_results(destination, database, schema, model='bs'):
                         "account_type_name, "\
                         "round(sum(converted_amount),2) as balance "\
                     "from " + database + "." + schema + ".netsuite2__balance_sheet "\
+                    "where accounting_book_id = " + str(accounting_book_id) + " "\
                     "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper",
                     ttl=0  # Always fetch fresh data
                 )
                 
                 dataframe_results.columns = dataframe_results.columns.str.lower()
+
+                st.write(
+                    "select "\
+                        "balance_sheet_sort_helper, "\
+                        "accounting_period_name, "\
+                        "accounting_period_ending, "\
+                        "account_category, "\
+                        "account_name, "\
+                        "account_type_name, "\
+                        "round(sum(converted_amount),2) as balance "\
+                    "from " + database + "." + schema + ".netsuite2__balance_sheet "\
+                    "where accounting_book_id = " + str(accounting_book_id) + " "\
+                    "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper",
+                )
                 
                 # Handle date conversion properly
                 if 'accounting_period_ending' in dataframe_results.columns:
@@ -129,6 +151,9 @@ def query_results(destination, database, schema, model='bs'):
             
             # Only proceed if we have a valid connection
             if conn is not None:
+                # Get the accounting book ID from session state
+                accounting_book_id = st.session_state.get('accounting_book', 1)
+                
                 # Use ttl=0 to always fetch fresh data
                 dataframe_results = conn.query(
                     "select "\
@@ -140,8 +165,23 @@ def query_results(destination, database, schema, model='bs'):
                         "account_type_name, "\
                         "round(sum(converted_amount),2) as balance "\
                     "from " + database + "." + schema + ".netsuite2__income_statement "\
+                    "where accounting_book_id = " + str(accounting_book_id) + " "\
                     "group by 1,2,3,4,5,6 order by income_statement_sort_helper",
                     ttl=0  # Always fetch fresh data
+                )
+
+                st.write(
+                    "select "\
+                        "income_statement_sort_helper, "\
+                        "accounting_period_name, "\
+                        "accounting_period_ending, "\
+                        "account_category, "\
+                        "account_name, "\
+                        "account_type_name, "\
+                        "round(sum(converted_amount),2) as balance "\
+                    "from " + database + "." + schema + ".netsuite2__income_statement "\
+                    "where accounting_book_id = " + str(accounting_book_id) + " "\
+                    "group by 1,2,3,4,5,6 order by income_statement_sort_helper",
                 )
 
                 dataframe_results.columns = dataframe_results.columns.str.lower()

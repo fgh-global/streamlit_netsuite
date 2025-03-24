@@ -20,16 +20,47 @@ def display_snowflake_credentials():
     snowflake_password = st.sidebar.text_input("Password", type="password", value=st.session_state.snowflake_password)
     
     # Add role input with session state persistence
+    roles = {
+        "NETSUITE_REPORTING_ALL": "NETSUITE_REPORTING_ALL",
+        "NETSUITE_REPORTING_UK": "NETSUITE_REPORTING_UK"
+    }
+
     if 'snowflake_role' not in st.session_state:
         st.session_state.snowflake_role = ""
-    snowflake_role = st.sidebar.text_input("Role", value=st.session_state.snowflake_role)
+    snowflake_role = st.sidebar.selectbox(
+        "Select Role",
+        options=list(roles.keys()),
+        index=0  # Default to first option (NETSUITE_REPORTING_ALL)
+    )
+
+    """
+    Creates a dropdown for selecting the accounting book.
+    Returns the selected accounting book ID.
+    """
+    # Set default in session state if not already set
+    if 'accounting_book' not in st.session_state:
+        st.session_state.accounting_book = 1  # Default to IFRS
+
+    # Create mapping of names to IDs
+    accounting_books = {
+        "IFRS Accounting Book": 1,
+        "WPP Account Book": 2
+    }
+    
+    # Create the dropdown using the names
+    selected_name = st.sidebar.selectbox(
+        "Select Account Book",
+        options=list(accounting_books.keys()),
+        index=0  # Default to first option (IFRS)
+    )
 
     # Add save button to update credentials and refresh
     if st.sidebar.button("Save Credentials"):
         st.session_state.snowflake_username = snowflake_username
         st.session_state.snowflake_password = snowflake_password
         st.session_state.snowflake_role = snowflake_role
-        
+        st.session_state.accounting_book = accounting_books[selected_name]
+
         # Clear any cached connections when credentials change
         if 'snowflake' in st.session_state:
             del st.session_state['snowflake']
@@ -59,8 +90,10 @@ def setup_snowflake_connection():
         # Check if .streamlit/secrets.toml exists for account, role, and warehouse
         secrets_path = Path(".streamlit/secrets.toml")
         
-        # Create a connection ID that includes the credentials to ensure a new connection when credentials change
-        connection_id = f"snowflake_{st.session_state.snowflake_username}_{st.session_state.snowflake_role}"
+        # # Create a connection ID that includes the credentials to ensure a new connection when credentials change
+        # connection_id = f"snowflake_{st.session_state.snowflake_username}_{st.session_state.snowflake_role}"
+
+        st.write("ROLE: ", st.session_state.snowflake_role)
         
         if secrets_path.exists():
             # If secrets.toml exists, use it for account, role, and warehouse

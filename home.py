@@ -2,7 +2,6 @@ import streamlit as st
 import os
 from functions.variables import database_schema_variables, destination_selection
 from functions.env_utils import display_snowflake_credentials
-# from functions.env_utils import setup_snowflake_connection
 
 # Initialize authentication state if not already set
 if 'authenticated' not in st.session_state:
