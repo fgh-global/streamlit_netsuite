@@ -65,7 +65,7 @@ def query_results(destination, database, schema, model='bs'):
                     "account_category, "\
                     "account_name, "\
                     "account_type_name, "\
-                    "round(sum(amount),2) as balance "\
+                    "round(sum(transaction_amount),2) as balance "\
                 "from `" + database + "." + schema + ".netsuite2__balance_sheet` "\
                 "where accounting_book_id = " + str(accounting_book_id) + " "\
                 "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper"
@@ -83,7 +83,7 @@ def query_results(destination, database, schema, model='bs'):
                     "account_category, "\
                     "account_name, "\
                     "account_type_name, "\
-                    "round(sum(amount),2) as balance "\
+                    "round(sum(transaction_amount),2) as balance "\
                 "from `" + database + "." + schema + ".netsuite2__income_statement` "\
                 "group by 1,2,3,4,5,6 order by income_statement_sort_helper"
             )
@@ -109,7 +109,7 @@ def query_results(destination, database, schema, model='bs'):
                         "account_category, "\
                         "account_name, "\
                         "account_type_name, "\
-                        "round(sum(amount),2) as balance "\
+                        "round(sum(transaction_amount),2) as balance "\
                     "from " + database + "." + schema + ".netsuite2__balance_sheet "\
                     "where accounting_book_id = " + str(accounting_book_id) + " "\
                     "group by 1,2,3,4,5,6 order by balance_sheet_sort_helper",
@@ -149,7 +149,7 @@ def query_results(destination, database, schema, model='bs'):
                         "account_category, "\
                         "account_name, "\
                         "account_type_name, "\
-                        "round(sum(amount),2) as balance "\
+                        "round(sum(transaction_amount),2) as balance "\
                     "from " + database + "." + schema + ".netsuite2__income_statement "\
                     "where accounting_book_id = " + str(accounting_book_id) + " "\
                     "group by 1,2,3,4,5,6 order by income_statement_sort_helper",
